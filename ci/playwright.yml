@@ -1,0 +1,37 @@
+playwright:agent:
+  extends: .python_backend
+  stage: playwright
+  needs:
+    - job: unit:python
+    - job: unit:node
+  script:
+    - cd backend
+    - pytest -m playwright --tb=short --junitxml=junit-playwright.xml
+  artifacts:
+    when: always
+    expire_in: 7 days
+    reports:
+      junit: backend/junit-playwright.xml
+    paths:
+      - backend/junit-playwright.xml
+
+playwright:live:
+  extends: .python_backend
+  stage: playwright
+  needs:
+    - job: playwright:agent
+  variables:
+    PLAYWRIGHT_LIVE: "1"
+  before_script:
+    - python -m pip install -U pip
+    - python -m pip install -e "backend/[dev]"
+    - python -m playwright install --with-deps chromium
+  script:
+    - cd backend
+    - pytest -m playwright --tb=short -k live
+  rules:
+    - if: $PLAYWRIGHT_LIVE == "1"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+      allow_failure: true
+  allow_failure: true

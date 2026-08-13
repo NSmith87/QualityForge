@@ -1,0 +1,33 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+stages:
+  - unit
+  - playwright
+  - ai_eval
+  - deploy
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  FF_USE_FASTZIP: "true"
+
+.python_backend:
+  image: python:3.12
+  interruptible: true
+  cache:
+    key:
+      files:
+        - backend/pyproject.toml
+    paths:
+      - .cache/pip
+  before_script:
+    - python -m pip install -U pip
+    - python -m pip install -e "backend/[dev]"
+
+include:
+  - local: ci/unit.yml
+  - local: ci/playwright.yml
+  - local: ci/ai-eval.yml
+  - local: ci/deploy.yml
