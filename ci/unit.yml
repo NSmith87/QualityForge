@@ -1,0 +1,28 @@
+unit:python:
+  extends: .python_backend
+  stage: unit
+  script:
+    - cd backend
+    - pytest -m unit --tb=short --junitxml=junit-unit.xml
+  artifacts:
+    when: always
+    expire_in: 7 days
+    reports:
+      junit: backend/junit-unit.xml
+    paths:
+      - backend/junit-unit.xml
+
+unit:node:
+  stage: unit
+  image: node:20
+  interruptible: true
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+  script:
+    - npm ci
+    - npm run build
+    - npm run agent -- --id QF-1 --title "Shopper can open the cart" --text "As a shopper I can open the cart from https://example.com"

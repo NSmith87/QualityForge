@@ -1,0 +1,24 @@
+{
+  "name": "qualityforge",
+  "private": true,
+  "description": "AI engineering agents for requirements, tests, and software quality",
+  "workspaces": [
+    "qualityforge-core",
+    "qualityforge-agent",
+    "dom-intelligence",
+    "playwright-agent",
+    "jira-agent"
+  ],
+  "scripts": {
+    "build": "npm run build -w @qualityforge/core && npm run build -w @qualityforge/dom-intelligence && npm run build -w @qualityforge/playwright-agent && npm run build -w @qualityforge/jira-agent && npm run build -w @qualityforge/agent",
+    "agent": "npm run start -w @qualityforge/agent --",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.8.3"
+  }
+}

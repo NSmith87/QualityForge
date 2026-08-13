@@ -1,0 +1,34 @@
+deploy:staging:
+  stage: deploy
+  image: python:3.12
+  needs:
+    - job: playwright:agent
+    - job: ai_eval:agent
+  script:
+    - python -m pip install build
+    - python -m build backend
+    - echo "Staging artifact $CI_COMMIT_SHORT_SHA ready"
+  artifacts:
+    expire_in: 14 days
+    paths:
+      - backend/dist/
+  environment:
+    name: staging
+    url: https://gitlab.com/qualityforge-group/QualityForge-project
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+deploy:production:
+  stage: deploy
+  image: python:3.12
+  needs:
+    - job: deploy:staging
+  script:
+    - echo "Promote $CI_COMMIT_SHORT_SHA to production when hosting is configured"
+    - echo "Set QUALITYFORGE_DEPLOY_URL as a CI/CD variable to enable a live promote step"
+  environment:
+    name: production
+  resource_group: production
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual

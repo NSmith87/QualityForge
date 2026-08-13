@@ -1,0 +1,16 @@
+ai_eval:agent:
+  extends: .python_backend
+  stage: ai_eval
+  needs:
+    - job: unit:python
+    - job: unit:node
+  script:
+    - cd backend
+    - pytest -m ai_eval --tb=short --junitxml=junit-ai-eval.xml
+  artifacts:
+    when: always
+    expire_in: 7 days
+    reports:
+      junit: backend/junit-ai-eval.xml
+    paths:
+      - backend/junit-ai-eval.xml

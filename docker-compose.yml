@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: qualityforge
+      POSTGRES_PASSWORD: qualityforge
+      POSTGRES_DB: qualityforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - qualityforge_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qualityforge -d qualityforge"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Optional. Local LLM default is a host Ollama install (`ollama serve` + `ollama pull mistral`).
+  # ollama:
+  #   image: ollama/ollama
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - qualityforge_ollama:/root/.ollama
+
+volumes:
+  qualityforge_pg:
+  # qualityforge_ollama:

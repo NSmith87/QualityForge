@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qualityforge"
+version = "0.1.0"
+description = "QualityForge Agent — FastAPI, LangGraph, Playwright, ChromaDB"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.34",
+  "pydantic>=2.10",
+  "pydantic-settings>=2.7",
+  "langgraph>=0.4",
+  "httpx>=0.28",
+  "sqlalchemy>=2.0",
+  "psycopg[binary]>=3.2",
+  "chromadb>=1.0",
+  "playwright>=1.49",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "pytest-asyncio>=0.25"]
+crewai = ["crewai>=0.80"]
+qdrant = ["qdrant-client>=1.12"]
+pinecone = ["pinecone>=5.0"]
+weaviate = ["weaviate-client>=4.9"]
+
+[project.scripts]
+qualityforge = "qualityforge.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = [
+  "unit: fast unit tests",
+  "playwright: Playwright generation and browser jobs",
+  "ai_eval: AI evaluation quality gates",
+]

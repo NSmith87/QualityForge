@@ -74,22 +74,90 @@ Architecture, how-tos, and operator runbooks. Keep secrets out of public docs.
 
 Positioning, product pages, and public docs entry points. Separate from `qualityforge-ui` (the product app).
 
-## Intended flow
+## Agent pipeline
 
 ```
-Jira story  →  jira-agent (ingest ACs)
-            →  rag-engine (similar tests / gaps)
-            →  dom-intelligence (page map)
-            →  playwright-agent (draft + run)
-            →  jira-agent (Tests, executions, status)
-            →  qualityforge-ui (review)
+Requirements
+     |
+     v
+Planner Agent
+     |
+     v
+DOM Intelligence
+     |
+     v
+Test Generator
+     |
+     v
+Playwright Executor
+     |
+     v
+Quality Insights
 ```
 
-`qualityforge-agent` owns that sequence. `qualityforge-core` is the shared language between steps.
+`qualityforge-agent` owns that sequence. `qualityforge-core` is the shared language between steps. Sibling packages implement a stage; they do not call each other directly.
+
+### Capabilities
+
+- Requirement analysis
+- Test strategy generation
+- DOM intelligence
+- Playwright automation
+- Failure analysis
+- Jira integration
+- CI/CD integration
+
+### Run locally
+
+TypeScript CLI (existing scaffold):
+
+```bash
+npm install
+npm run build
+npm run agent -- --title "Shopper can open the cart" --text "As a shopper I can open the cart from https://example.com"
+```
+
+Python MVP agent (FastAPI + LangGraph):
+
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+qualityforge run --title "Shopper can open the cart" --text "As a shopper I can open the cart from https://example.com"
+qualityforge serve
+```
+
+The first pipeline is a dry-run: it plans, maps locators, emits a Playwright spec, and reports insights without launching a browser.
+
+## GitLab CI
+
+[qualityforge-group/QualityForge-project](https://gitlab.com/qualityforge-group/QualityForge-project)
+
+```
+GitLab CI
+    |
+    ├── Unit tests
+    ├── Playwright tests
+    ├── AI evaluation tests
+    └── Deployment
+```
+
+## Engineering stack
+
+See [docs/ENGINEERING.md](docs/ENGINEERING.md).
+
+| Layer | MVP | Later |
+|---|---|---|
+| Backend | Python, FastAPI, LangGraph, Pydantic, Postgres | CrewAI crews |
+| AI (local) | Ollama, Mistral / Llama | — |
+| AI (prod) | OpenAI, Anthropic, Azure OpenAI | — |
+| Browser | Playwright | live traces |
+| Vector | ChromaDB | Qdrant, Pinecone, Weaviate |
 
 ## Status
 
-Scaffolding. Packages are not published yet.
+Runnable TypeScript scaffold plus Python FastAPI/LangGraph agent. Live crawls, live Playwright, and Jira write-back are next. Packages are not published yet.
 
 ## License
 

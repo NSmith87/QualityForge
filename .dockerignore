@@ -1,0 +1,7 @@
+backend/.venv
+backend/.pytest_cache
+backend/.chroma
+**/__pycache__
+node_modules
+.git
+.chroma
